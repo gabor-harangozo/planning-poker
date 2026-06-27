@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Planning Poker — Real-time peer-to-peer estimation tool for agile teams. No sign-up required." />
+  <title>Planning Poker — P2P Estimation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <!-- ═══════════════ LOBBY SCREEN ═══════════════ -->
+  <div id="lobby" class="screen active">
+    <div class="lobby-container">
+      <div class="logo-section">
+        <div class="logo-icon">🃏</div>
+        <h1>Planning Poker</h1>
+        <p class="subtitle">Real-time estimation for agile teams</p>
+      </div>
+
+      <div class="glass-card lobby-card">
+        <div class="input-group">
+          <label for="player-name">Your Name</label>
+          <input type="text" id="player-name" placeholder="e.g. Alice" maxlength="20" autocomplete="off" />
+        </div>
+
+        <div class="lobby-actions">
+          <button id="btn-create-room" class="btn btn-primary btn-lg">
+            <span class="btn-icon">✨</span> Create Room
+          </button>
+          <div class="divider"><span>or join an existing room</span></div>
+          <div class="join-group">
+            <input type="text" id="room-code-input" placeholder="Paste room code" autocomplete="off" />
+            <button id="btn-join-room" class="btn btn-secondary">Join</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="lobby-footer">No sign-up · Peer-to-peer · Free</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ROOM SCREEN ═══════════════ -->
+  <div id="room" class="screen">
+    <!-- Top Bar -->
+    <header class="room-header">
+      <div class="header-left">
+        <div class="logo-mini">🃏</div>
+        <h2 id="room-title">Planning Poker</h2>
+      </div>
+      <div class="header-center">
+        <div id="ticket-display" class="ticket-badge hidden">
+          <span class="ticket-label">Estimating:</span>
+          <span id="ticket-name" class="ticket-value"></span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="btn-copy-link" class="btn btn-ghost btn-sm" title="Copy invite link">
+          📋 Invite
+        </button>
+        <button id="btn-leave" class="btn btn-ghost btn-sm btn-danger" title="Leave room">
+          🚪 Leave
+        </button>
+      </div>
+    </header>
+
+    <!-- Admin Controls -->
+    <div id="admin-controls" class="admin-bar hidden">
+      <div class="admin-bar-inner">
+        <div class="input-group input-group-inline">
+          <input type="text" id="ticket-input" placeholder="Enter Jira ticket (e.g. PROJ-123)" autocomplete="off" />
+          <button id="btn-set-ticket" class="btn btn-primary btn-sm">Set Ticket</button>
+        </div>
+        <div class="admin-actions">
+          <button id="btn-reveal-all" class="btn btn-accent btn-sm">👁 Reveal All</button>
+          <button id="btn-reset-votes" class="btn btn-secondary btn-sm">🔄 Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table Area -->
+    <main class="table-area">
+      <div id="participants-ring" class="participants-ring">
+        <!-- Participants rendered dynamically -->
+      </div>
+      <div class="table-center">
+        <div id="table-surface" class="table-surface">
+          <div id="table-status" class="table-status">Waiting for votes…</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Voting Hand -->
+    <div id="voting-hand" class="voting-hand">
+      <div class="hand-cards" id="hand-cards">
+        <!-- Cards rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Throw projectile layer -->
+    <div id="throw-layer" class="throw-layer"></div>
+
+    <!-- Toast notifications -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <!-- Connection overlay -->
+  <div id="connecting-overlay" class="overlay hidden">
+    <div class="glass-card overlay-card">
+      <div class="spinner"></div>
+      <p id="connecting-text">Connecting…</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
