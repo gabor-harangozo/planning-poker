@@ -17,6 +17,30 @@ export class Networking {
         this.onError = null;          // (error) => void
         this._retryTimers = new Map();
     }
+    // Free STUN and TURN servers for better cross-network traversal
+    _getPeerConfig() {
+        return {
+            debug: 0,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    // Open Relay Project (free public TURN)
+                    {
+                        urls: "turn:openrelay.metered.ca:80",
+                        username: "openrelayproject",
+                        credential: "openrelayproject"
+                    },
+                    {
+                        urls: "turn:openrelay.metered.ca:443",
+                        username: "openrelayproject",
+                        credential: "openrelayproject"
+                    }
+                ]
+            }
+        };
+    }
 
     // ── Admin: Create a room ──
     createRoom(roomId) {
@@ -25,7 +49,7 @@ export class Networking {
         const peerId = adminPeerIdFromRoom(roomId);
 
         this._showOverlay('Creating room…');
-        this.peer = new Peer(peerId, { debug: 0 });
+        this.peer = new Peer(peerId, this._getPeerConfig());
 
         this.peer.on('open', () => {
             this._hideOverlay();
@@ -58,16 +82,38 @@ export class Networking {
         const peerId = generatePeerId(roomId, false);
         const adminPeerId = adminPeerIdFromRoom(roomId);
 
-        this._showOverlay('Joining room…');
-        this.peer = new Peer(peerId, { debug: 0 });
+        this._showOverlay('Joining room… (getting peer identity)');
+
+        let connectionTimeout = null;
+
+        this.peer = new Peer(peerId, this._getPeerConfig());
 
         this.peer.on('open', () => {
+            this._showOverlay('Punching through firewall (ICE)…');
+
+            // Fail if WebRTC doesn't connect in 12s
+            connectionTimeout = setTimeout(() => {
+                this._hideOverlay();
+                this.onError?.('Connection timed out. A strict firewall might be blocking the P2P connection.');
+                if (this.peer) this.peer.destroy();
+            }, 12000);
+
             const conn = this.peer.connect(adminPeerId, { reliable: true });
-            
+
             // Wait for connection to open before calling onReady
             conn.on('open', () => {
+                if (connectionTimeout) clearTimeout(connectionTimeout);
                 this.onReady?.();
             });
+
+            // Need to catch errors here separately to stop timeout
+            conn.on('error', (err) => {
+                if (connectionTimeout) clearTimeout(connectionTimeout);
+            });
+            conn.on('close', () => {
+                if (connectionTimeout) clearTimeout(connectionTimeout);
+            });
+
             this._setupConnection(conn);
         });
 
