@@ -25,7 +25,7 @@ export class Networking {
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:global.stun.twilio.com:3478' },
-                    // Open Relay Project
+                    // Open Relay Project (TURN over UDP)
                     {
                         urls: "turn:openrelay.metered.ca:80",
                         username: "openrelayproject",
@@ -33,6 +33,17 @@ export class Networking {
                     },
                     {
                         urls: "turn:openrelay.metered.ca:443",
+                        username: "openrelayproject",
+                        credential: "openrelayproject"
+                    },
+                    // Open Relay Project (TURN over TCP to bypass UDP-blocking firewalls)
+                    {
+                        urls: "turn:openrelay.metered.ca:80?transport=tcp",
+                        username: "openrelayproject",
+                        credential: "openrelayproject"
+                    },
+                    {
+                        urls: "turn:openrelay.metered.ca:443?transport=tcp",
                         username: "openrelayproject",
                         credential: "openrelayproject"
                     }
