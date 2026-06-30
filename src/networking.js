@@ -20,13 +20,12 @@ export class Networking {
     // Free STUN and TURN servers for better cross-network traversal
     _getPeerConfig() {
         return {
-            debug: 0,
+            debug: 3, // Enable deep debugging to see ICE failures
             config: {
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    // Open Relay Project (free public TURN)
+                    { urls: 'stun:global.stun.twilio.com:3478' },
+                    // Open Relay Project
                     {
                         urls: "turn:openrelay.metered.ca:80",
                         username: "openrelayproject",
@@ -37,7 +36,8 @@ export class Networking {
                         username: "openrelayproject",
                         credential: "openrelayproject"
                     }
-                ]
+                ],
+                iceCandidatePoolSize: 10,
             }
         };
     }
