@@ -98,7 +98,9 @@ export class Networking {
                 if (this.peer) this.peer.destroy();
             }, 12000);
 
-            const conn = this.peer.connect(adminPeerId, { reliable: true });
+            const conn = this.peer.connect(adminPeerId, {
+                reliable: false
+            });
 
             // Wait for connection to open before calling onReady
             conn.on('open', () => {
